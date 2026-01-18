@@ -92,9 +92,59 @@ export class MessagingGateway {
     const receiverClient = this.userEmailWebSocketMap.get(
       payload.recipientEmail,
     );
+
+    const messageData = {
+      senderEmail,
+      recipientEmail: payload.recipientEmail,
+      content: payload.content,
+    } as {
+      senderEmail: string;
+      recipientEmail: string;
+      content: string;
+    };
+    // console.log(messageData)
+
+    const message = await this.prisma.message.create({
+      data: messageData,
+    });
+
+    // console.log('Created Message:', message);
+
+    const messageResult = await this.prisma.message.findUnique({
+      where: {
+        id: message.id,
+      },
+      include: {
+        Sender: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            image: true,
+            role: true,
+            isVerified: true,
+          },
+        },
+        Receiver: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            image: true,
+            role: true,
+            isVerified: true,
+          },
+        },
+      },
+    });
+
+    // console.log('Message With Relations:', messageResult);
+
     if (receiverClient) {
       receiverClient.send(
-        JSON.stringify({ senderEmail, content: payload.content }),
+        JSON.stringify({ event: 'message', data: messageResult }),
       );
     }
 
