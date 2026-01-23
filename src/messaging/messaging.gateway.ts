@@ -65,7 +65,7 @@ export class MessagingGateway {
     this.webSocketUserEmailMap.set(client, isUserExist?.email as string);
     // console.log(this.userIdWebSocketMap);
   }
-  async handleDisconnect(client: WebSocket) {
+  handleDisconnect(client: WebSocket) {
     // Remove the client from the map
     const userEamil = this.webSocketUserEmailMap.get(client);
     console.log(
