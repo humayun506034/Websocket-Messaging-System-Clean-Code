@@ -105,7 +105,8 @@ model Message {
   id             String   @id @default(uuid())
   senderEmail    String
   recipientEmail String
-  content        String
+  text           String?
+  document       String?
   createdAt      DateTime @default(now())
 
   Sender   User @relation("SenderMessages", fields: [senderEmail], references: [email])

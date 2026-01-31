@@ -150,4 +150,11 @@ export class MessagingGateway {
 
     // console.log("🚀 ~ MessagingGateway ~ onMessage ~ senderEmail:", senderEmail)
   }
+
+  public sendToUser(email: string, data: any) {
+    const client = this.userEmailWebSocketMap.get(email);
+    if (client && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({ event: 'message', data }));
+    }
+  }
 }

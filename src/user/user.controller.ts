@@ -19,11 +19,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import multer from 'multer';
 import { Roles } from 'src/common/decorator/rolesDecorator';
 import { AuthGuard } from 'src/common/guards/auth/auth.guard';
-import { uploadFileToSupabase } from 'src/utils/common/uploadFileToSupabase';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ROLE } from './entities/role.entity';
 import { UserService } from './user.service';
 import { UserRole } from '@prisma/client';
+import { uploadFileToS3 } from 'src/utils/common/S3FileUpload';
 
 @Controller('user')
 export class UserController {
@@ -77,13 +77,12 @@ export class UserController {
 
     if (image) {
       console.log(image);
-      const imageLink = await uploadFileToSupabase(
+      const imageLink = await uploadFileToS3(
         image,
         this.configService, // <-- important
-        'user-uploads', // optional folder
       );
       // console.log('🚀 ~ UserController ~ create ~ imageLink:', imageLink);
-      userRegistrationData.image = imageLink;
+      userRegistrationData.image = imageLink as string;
     }
 
     return this.userService.create(userRegistrationData as CreateUserDto);
@@ -165,10 +164,9 @@ export class UserController {
 
     // 🟢 IMAGE OPTIONAL
     if (image) {
-      const imageLink = await uploadFileToSupabase(
+      const imageLink = await uploadFileToS3(
         image,
         this.configService,
-        'user-uploads',
       );
       userUpdateData.image = imageLink;
     }
