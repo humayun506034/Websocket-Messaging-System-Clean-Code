@@ -65,7 +65,7 @@ export class MessagingController {
 
     console.log(messageData);
 
-    // return await this.messagingService.sendMessage(messageData);
+    return await this.messagingService.sendMessage(messageData);
     // return this.userService.create(messageData as CreateUserDto);
   }
 }
