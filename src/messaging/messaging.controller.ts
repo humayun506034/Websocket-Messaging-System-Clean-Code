@@ -14,8 +14,9 @@ import multer from 'multer';
 import { Roles } from 'src/common/decorator/rolesDecorator';
 import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import { ROLE } from 'src/user/entities/role.entity';
-import { uploadFileToS3 } from 'src/utils/common/S3FileUpload';
+// import { uploadFileToS3 } from 'src/utils/common/S3FileUpload';
 import { MessagingService } from './messaging.service';
+import { uploadFileToCloudinary } from 'src/utils/common/uploadFileToCloudinary';
 
 @Controller('messaging')
 export class MessagingController {
@@ -50,7 +51,11 @@ export class MessagingController {
 
     if (document) {
       // console.log(document);
-      const documentLink = await uploadFileToS3(document, this.configService, {
+      // const documentLink = await uploadFileToS3(document, this.configService, {
+      //   folder: 'message-documents',
+      // });
+
+      const documentLink = await uploadFileToCloudinary(document, this.configService, {
         folder: 'message-documents',
       });
       // console.log('🚀 ~ UserController ~ create ~ documentLink:', documentLink);
@@ -58,9 +63,9 @@ export class MessagingController {
     }
     messageData.senderEmail = req.user.email;
 
-    // console.log(messageData);
+    console.log(messageData);
 
-    return await this.messagingService.sendMessage(messageData);
+    // return await this.messagingService.sendMessage(messageData);
     // return this.userService.create(messageData as CreateUserDto);
   }
 }

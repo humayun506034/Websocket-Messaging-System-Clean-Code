@@ -23,7 +23,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ROLE } from './entities/role.entity';
 import { UserService } from './user.service';
 import { UserRole } from '@prisma/client';
-import { uploadFileToS3 } from 'src/utils/common/S3FileUpload';
+// import { uploadFileToS3 } from 'src/utils/common/S3FileUpload';
+import { uploadFileToCloudinary } from 'src/utils/common/uploadFileToCloudinary';
 
 @Controller('user')
 export class UserController {
@@ -76,10 +77,17 @@ export class UserController {
     }
 
     if (image) {
-      console.log(image);
-      const imageLink = await uploadFileToS3(
+      // console.log(image);
+      // const imageLink = await uploadFileToS3(
+      //   image,
+      //   this.configService, // <-- important
+      // );
+      const imageLink = await uploadFileToCloudinary(
         image,
-        this.configService, // <-- important
+        this.configService,
+        {
+          folder: 'user-profile-images',
+        },
       );
       // console.log('🚀 ~ UserController ~ create ~ imageLink:', imageLink);
       userRegistrationData.image = imageLink as string;
@@ -164,10 +172,9 @@ export class UserController {
 
     // 🟢 IMAGE OPTIONAL
     if (image) {
-      const imageLink = await uploadFileToS3(
-        image,
-        this.configService,
-      );
+       const imageLink = await uploadFileToCloudinary(image, this.configService, {
+        folder: 'user-profile-images',
+      });
       userUpdateData.image = imageLink;
     }
 
