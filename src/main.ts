@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 
 export async function createNestApp(): Promise<INestApplication> {
   const app = await NestFactory.create(AppModule);
+  app.use('/favicon.ico', (_req, res) => res.status(204).end());
   app.useWebSocketAdapter(new WsAdapter(app))
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalPipes(
