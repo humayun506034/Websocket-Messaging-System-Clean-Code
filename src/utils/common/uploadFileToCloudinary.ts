@@ -15,6 +15,15 @@ export interface UploadOptions {
   returnMetadata?: boolean;
 }
 
+function toError(err: unknown): Error {
+  if (err instanceof Error) return err;
+  if (typeof err === 'string') return new Error(err);
+  if (typeof err === 'object' && err && 'message' in err) {
+    return new Error((err as any).message);
+  }
+  return new Error('Cloudinary upload failed');
+}
+
 /* -------------------- Helper -------------------- */
 const streamUpload = (
   fileBuffer: Buffer,
@@ -32,15 +41,7 @@ const streamUpload = (
       },
       (error, result) => {
         if (error) {
-          reject(
-            error instanceof Error
-              ? error
-              : new Error(
-                  typeof error === 'string'
-                    ? error
-                    : error?.message || 'Cloudinary upload failed',
-                ),
-          );
+          reject(toError(error));
           return;
         }
 
@@ -70,7 +71,7 @@ export const uploadFileToCloudinary = async (
     throw new Error('File not provided');
   }
 
-  console.log(file)
+  // console.log(file)
 
   const folder = options.folder || 'files';
   const returnMetadata = options.returnMetadata ?? false;
